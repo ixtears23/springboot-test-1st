@@ -8,26 +8,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.example.demo.DemoApplication;
+
 @RunWith(SpringRunner.class)
-@WebMvcTest(IndexController.class)
-public class WebAppConfigWithJunit4RunnerTest {
+@SpringBootTest(
+		classes = DemoApplication.class,
+		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "spring.mvc.view.prefix=/jsp/", "spring.mvc.view.suffix=.jsp", "spring.mvc.servlet.path=/" })
+@AutoConfigureMockMvc
+public class AutoConfigureMockMvcTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 	
 	@Test
-	public void homeTest() throws Exception {
+	public void indexTest() throws Exception {
 		
-		this.mockMvc.perform(post("/home")
+		this.mockMvc.perform(post("/index")
 				.accept(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 		.andExpect(status().isOk())
-		.andExpect(view().name("home"))
+		.andExpect(view().name("index"))
 		.andDo(print());
 		
 	}

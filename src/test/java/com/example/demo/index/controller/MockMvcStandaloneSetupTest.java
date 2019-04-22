@@ -12,41 +12,45 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
-import com.example.demo.DemoApplication;
-
-/// TODO 오류 !!!
-@RunWith(SpringRunner.class)
-@SpringBootTest(
-		classes = DemoApplication.class,
-		webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class WebMvcTestWithSpringRunnerTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringBootTest
+public class MockMvcStandaloneSetupTest {
 
 	private MockMvc mockMvc;
 	
-	@Autowired
 	private IndexController indexController;
 	
 	@Before
 	public void setup() {
-		this.mockMvc = MockMvcBuilders.standaloneSetup(indexController).build();
+		
+		indexController = mock(IndexController.class);
+		this.mockMvc = MockMvcBuilders
+				.standaloneSetup(indexController)
+				.setViewResolvers(viewResolver())
+				.build();
+	}
+	
+	private ViewResolver viewResolver() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setPrefix("/jsp/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
 	}
 	
 	@Test
-	public void homeTest() throws Exception {
-		
-		indexController = mock(IndexController.class);
-		
-		this.mockMvc.perform(post("/home")
+	public void indexTest() throws Exception {
+
+		this.mockMvc.perform(post("/index")
 				.accept(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 				.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
 		.andExpect(status().isOk())
-		.andExpect(view().name("home"))
+		.andExpect(view().name("index"))
 		.andDo(print());
 		
 	}
